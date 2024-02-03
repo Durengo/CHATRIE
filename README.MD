@@ -1,8 +1,9 @@
 # CHATRIE
 
 Basic chatting app for NOSQL course.
-The backend is made with [Cassandra](https://cassandra.apache.org/).
-The frontend - I'm still deciding...
+
+* The backend is made with [Cassandra](https://cassandra.apache.org/).
+* The frontend is made with [Node.js](https://nodejs.org/), [Svelte](https://svelte.dev/) + [Typescript](https://svelte.dev/docs/typescript)
 
 ## Requirements
 
@@ -32,4 +33,8 @@ These packages are automatically installed by following the [setup](#setup) sect
 3. Setup the frontend
     * $npm install
 4. Launch the app
-    * $node index.js
+    * $npm run dev -- --open
+
+## More
+
+Additional NPM build info can be found [here](./NPM.MD)
