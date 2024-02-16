@@ -25,16 +25,18 @@ These packages are automatically installed by following the [setup](#setup) sect
     * $./venv/Scripts/activate
     * pip install -r ./requirements.txt
 2. Setup the Docker environment with the provided scripts
-    * $./Tools/setup.py
-    * 1 To setup and run the Cassandra container
+    * Make sure that Docker Desktop is running
+    * $python ./Tools/setup.py
+    * 1 To setup and run the Cassandra container (it will take a minute or two for Docker to set the server up so other commands might throw errors during this time)
     * 2 To setup the keyspace
     * 3 To stop the container
     * Deleting the container is currently done manually
-3. Setup the frontend
+3. Setup the backend
+4. Setup the frontend
     * $npm install
-4. Launch the app
+5. Launch the app
     * $npm run dev -- --open
 
 ## More
 
-Additional NPM build info can be found [here](./NPM.MD)
+Additional NPM build info can be found [here](/Client/NPM.MD)
