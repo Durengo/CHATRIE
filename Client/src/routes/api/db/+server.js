@@ -1,22 +1,19 @@
-// src/routes/api/connectToCassandra.js
-
-import cassandra from 'cassandra-driver';
+// src/routes/api/connectToSocket.js
 
 export async function GET(req, res) {
 	try {
-		const client = new cassandra.Client({
-			contactPoints: ['127.0.0.1'],
-			localDataCenter: 'datacenter1',
-			keyspace: 'testspace'
-		});
+		const response = await fetch('http://localhost:8090/users');
+		if (response.ok) {
+			const responseData = await response.json();
+			console.log('Data received from socket:', responseData);
 
-		await client.connect();
-		return new Response('Connection to Cassandra successful!', {
-			status: 200
-		});
+			return new Response('Connected to Socket.', {
+				status: 200
+			});
+		}
 	} catch (error) {
 		console.error('Connection failed:', error);
-		return new Response('Failed to connect to Cassandra.', {
+		return new Response('Failed to connect to Socket.', {
 			status: 500
 		});
 	}

@@ -34,7 +34,6 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"cassandra": "^0.1.0",
-		"cassandra-driver": "^4.7.2"
+		
 	}
 }
