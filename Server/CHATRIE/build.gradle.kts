@@ -32,7 +32,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-websocket")
     implementation("org.springframework.data:spring-data-envers")
     // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-security
-    implementation("org.springframework.boot:spring-boot-starter-security:3.2.3")
+    implementation("org.springframework.boot:spring-boot-starter-security")
 
     // Cassandra
     implementation("org.springframework.boot:spring-boot-starter-data-cassandra")
