@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 
 @Configuration
 public class RabbitMQConfig {
-    static final String LOBBY_EXCHANGE_NAME = "lobby-exchange";
+    public static final String LOBBY_EXCHANGE_NAME = "lobby-exchange";
 
     /**
      * Creates a group of AMQP declarations (queues and bindings) for the lobby system.
