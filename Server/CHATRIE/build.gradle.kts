@@ -39,6 +39,11 @@ dependencies {
 
     // RabbitMQ
     implementation("org.springframework.boot:spring-boot-starter-amqp")
+
+    // Swagger
+    // https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-starter-webmvc-ui
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0")
+
 }
 
 tasks.test {
