@@ -19,14 +19,19 @@ public class SecurityConfig {
     @Autowired
     private UserDetailService userDetailsService;
 
+    @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            .authorizeHttpRequests((authz) -> authz
-                .requestMatchers("/chat/**").authenticated()
-                .anyRequest().permitAll()
-            )
-            .formLogin(withDefaults())
-            .logout(logout -> logout.logoutUrl("/logout").permitAll());
+                .authorizeHttpRequests((authz) -> authz
+                        .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        .requestMatchers("/users/**").permitAll()
+                        .requestMatchers("/chat/**").authenticated()
+//                        .anyRequest().permitAll()
+                )
+                .formLogin(login -> login.loginPage("/login").permitAll())
+                .logout(logout -> logout.logoutUrl("/logout").permitAll());
+//                .csrf().disable()
+//                .httpBasic();
 
         return http.build();
     }
