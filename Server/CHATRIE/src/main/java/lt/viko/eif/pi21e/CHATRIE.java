@@ -9,7 +9,10 @@ import org.springframework.data.cassandra.repository.config.EnableCassandraRepos
 @SpringBootApplication
 @EnableCassandraRepositories
 public class CHATRIE {
+    private static final Logger logger = LoggerFactory.getLogger(CHATRIE.class);
+
     public static void main(String... args) {
         SpringApplication.run(CHATRIE.class, args);
+        logger.info("Access the Swagger UI here: localhost:8090/swagger-ui.html");
     }
 }
