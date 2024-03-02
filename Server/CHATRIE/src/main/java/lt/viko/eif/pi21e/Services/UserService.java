@@ -1,5 +1,6 @@
 package lt.viko.eif.pi21e.Services;
 
+import lombok.RequiredArgsConstructor;
 import lt.viko.eif.pi21e.Entities.User;
 import lt.viko.eif.pi21e.Repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,12 +9,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    public void saveUser(User user)
-    {
+    public void saveUser(User user) {
         userRepository.save(user);
     }
 }
