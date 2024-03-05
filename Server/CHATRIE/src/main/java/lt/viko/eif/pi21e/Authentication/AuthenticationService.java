@@ -52,6 +52,16 @@ public class AuthenticationService {
                 .token(jwtToken)
                 .build();
     }
+
+    public Boolean validate(ValidationRequest request) throws Exception {
+        var user = userRepository.findByUsername(request.getUsername())
+                .orElseThrow();
+
+//        if (!user.getPassword().equals(request.getPassword()))
+//            throw new Exception("Invalid password.");
+
+        return jwtService.isTokenValid(request.getToken(), user);
+    }
 }
 
 
