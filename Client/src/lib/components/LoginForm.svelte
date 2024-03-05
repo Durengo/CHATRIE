@@ -1,6 +1,6 @@
 <script>
 	import { onMount } from 'svelte';
-	import { apiBaseUrl } from '../stores.js';
+	import { apiBaseUrl, authToken, isLoggedIn, loginUsername } from '$lib/stores.js';
 
 	let username = '';
 	let password = '';
@@ -14,12 +14,24 @@
 			});
 
 			if (response.ok) {
-				const token = await response.text();
-				localStorage.setItem('authToken', token);
+				const responseBody = await response.json();
+				const token = responseBody.token;
 
-				var newToken = localStorage.getItem('authToken');
-				alert(`Login successful with token: ${newToken}`);
-				// window.location.href = '/protected';
+				console.log('Token:', token);
+
+				sessionStorage.setItem('authToken', token);
+				// TESTING:
+				// sessionStorage.setItem('authToken', "123");
+				authToken.set(token);
+				isLoggedIn.set(true);
+				loginUsername.set(username);
+				sessionStorage.setItem('loginUsername', username);
+
+				var newToken = sessionStorage.getItem('authToken');
+				console.log(`Login successful with token: ${newToken}`);
+				console.log(`Login successful with username: ${username}`);
+				alert(`Login successful: ${newToken}`);
+				// window.location.href = '/login';
 			} else {
 				console.error(`Login failed with status: ${response.status}`);
 				try {

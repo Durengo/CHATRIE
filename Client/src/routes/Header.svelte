@@ -2,6 +2,7 @@
 	import { page } from '$app/stores';
 	import logo from '$lib/images/svelte-logo.svg';
 	import github from '$lib/images/github.svg';
+	import ProfileIcon from '$lib/components/ProfileIcon.svelte';
 </script>
 
 <header>
@@ -9,6 +10,9 @@
 		<a href="https://kit.svelte.dev">
 			<img src={logo} alt="SvelteKit" />
 		</a>
+	</div>
+	<div>
+		<ProfileIcon />
 	</div>
 
 	<nav>
@@ -24,6 +28,9 @@
 			</li>
 			<li aria-current={$page.url.pathname.startsWith('/login') ? 'page' : undefined}>
 				<a href="/login">Login</a>
+			</li>
+			<li aria-current={$page.url.pathname.startsWith('/chat') ? 'page' : undefined}>
+				<a href="/chat">Chats</a>
 			</li>
 		</ul>
 		<svg viewBox="0 0 2 3" aria-hidden="true">

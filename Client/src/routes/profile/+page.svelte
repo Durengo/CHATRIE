@@ -1,5 +1,5 @@
 <script>
-    import { isLoggedIn } from '$lib/stores.js';
+    import { isLoggedIn } from '../../stores.jss';
     import { goto } from '$app/navigation';
 
     if (!$isLoggedIn) {
