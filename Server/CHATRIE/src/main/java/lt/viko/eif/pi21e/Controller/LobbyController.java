@@ -3,6 +3,7 @@ package lt.viko.eif.pi21e.Controller;
 import lombok.RequiredArgsConstructor;
 import lt.viko.eif.pi21e.Entities.Lobby;
 import lt.viko.eif.pi21e.Repositories.LobbyRepository;
+import lt.viko.eif.pi21e.Services.LobbyService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class LobbyController {
     private final LobbyRepository lobbyRepository;
+    private final LobbyService lobbyService;
 
     @GetMapping(path = "", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Lobby> getAllLobbies() {
@@ -28,7 +30,7 @@ public class LobbyController {
             @RequestParam("user1Nickname") String user1Nickname,
             @RequestParam("user2Nickname") String user2Nickname
     ) {
-        Lobby lobby = lobbyRepository.findLobbyByUser1NicknameAndUser2Nickname(user1Nickname, user2Nickname);
+        Lobby lobby = lobbyService.findSpecific(user1Nickname, user2Nickname);
         if (lobby != null) {
             return ResponseEntity.ok(lobby);
         } else {
@@ -38,7 +40,7 @@ public class LobbyController {
 
     @GetMapping(path = "/{lobbyId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Lobby> getLobbyById(@PathVariable UUID lobbyId) {
-        Optional<Lobby> lobbyOptional = lobbyRepository.findById(String.valueOf(lobbyId));
+        Optional<Lobby> lobbyOptional = lobbyRepository.findById(lobbyId);
         return lobbyOptional.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
@@ -50,8 +52,8 @@ public class LobbyController {
 
     @DeleteMapping(path = "/{lobbyId}")
     public ResponseEntity<Void> deleteLobby(@PathVariable UUID lobbyId) {
-        if (lobbyRepository.existsById(String.valueOf(lobbyId))) {
-            lobbyRepository.deleteById(String.valueOf(lobbyId));
+        if (lobbyRepository.existsById(lobbyId)) {
+            lobbyRepository.deleteById(lobbyId);
             return ResponseEntity.noContent().build();
         } else {
             return ResponseEntity.notFound().build();
@@ -60,7 +62,7 @@ public class LobbyController {
 
     @GetMapping(path = "/user/{nickname}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Lobby> getLobbiesByUser(@PathVariable String nickname) {
-        return lobbyRepository.findLobbiesByUserNickname(nickname);
+        return lobbyService.findAllByUser(nickname);
     }
 }
 
