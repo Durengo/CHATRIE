@@ -20,6 +20,6 @@ public class LobbyChatKey implements Serializable {
     @PrimaryKeyColumn(name = "lobbyId", type = PrimaryKeyType.PARTITIONED)
     private UUID lobbyId;
 
-    @PrimaryKeyColumn(name = "timestamp", ordinal = 0, ordering = Ordering.DESCENDING)
+    @PrimaryKeyColumn(name = "timestamp", ordinal = 0, ordering = Ordering.ASCENDING)
     private Date timestamp;
 }
