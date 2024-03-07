@@ -15,10 +15,14 @@ public class AuthenticationController {
     private final AuthenticationService authService;
 
     @PostMapping("/register")
-    public ResponseEntity<AuthenticationResponse> register(
+    public ResponseEntity<?> register(
             @RequestBody RegisterRequest request
     ) {
-        return ResponseEntity.ok(authService.register(request));
+        try {
+            return ResponseEntity.ok(authService.register(request));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(409).body("Nickname already taken.");
+        }
     }
 
     @PostMapping("/authenticate")
