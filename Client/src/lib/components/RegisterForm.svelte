@@ -7,7 +7,7 @@
 
 	async function handleSubmit() {
 		try {
-			const response = await fetch(`${$apiBaseUrl}/api/v1/auth/authenticate`, {
+			const response = await fetch(`${$apiBaseUrl}/api/v1/auth/register`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ username, password })
@@ -30,7 +30,7 @@
 				var newToken = sessionStorage.getItem('authToken');
 				console.log(`Login successful with token: ${newToken}`);
 				console.log(`Login successful with username: ${username}`);
-				alert(`Login successful: ${newToken}`);
+				alert(`New user created and logged in: ${newToken}`);
 
 				window.location.href = '/';
 			} else {
@@ -53,5 +53,5 @@
 <form on:submit|preventDefault={handleSubmit}>
 	<input type="text" bind:value={username} placeholder="Username" />
 	<input type="password" bind:value={password} placeholder="Password" />
-	<button type="submit">Login</button>
+	<button type="submit">Register</button>
 </form>
