@@ -79,7 +79,7 @@ public class DataInitializer implements CommandLineRunner {
                     .message("Hi!")
                     .build();
 
-            millisecondsToAdd += 5;
+            millisecondsToAdd += 5 * 1000;
             LobbyChatKey lobbyChatKey2 = new LobbyChatKey(lobby.getLobbyId(), new Date(today.getTime() + millisecondsToAdd));
             Chat chat2 = Chat.builder()
                     .lobbyChatKey(lobbyChatKey2)
@@ -88,7 +88,7 @@ public class DataInitializer implements CommandLineRunner {
                     .message("Hello!")
                     .build();
 
-            millisecondsToAdd += 5;
+            millisecondsToAdd += 5 * 1000;
             LobbyChatKey lobbyChatKey3 = new LobbyChatKey(lobby.getLobbyId(), new Date(today.getTime() + millisecondsToAdd));
             Chat chat3 = Chat.builder()
                     .lobbyChatKey(lobbyChatKey3)
@@ -97,7 +97,7 @@ public class DataInitializer implements CommandLineRunner {
                     .message("This is great!")
                     .build();
 
-            millisecondsToAdd += 5;
+            millisecondsToAdd += 120 * 1000;
             LobbyChatKey lobbyChatKey4 = new LobbyChatKey(lobby.getLobbyId(), new Date(today.getTime() + millisecondsToAdd));
             Chat chat4 = Chat.builder()
                     .lobbyChatKey(lobbyChatKey4)
