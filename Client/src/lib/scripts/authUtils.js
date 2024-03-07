@@ -15,32 +15,32 @@ export async function verifyJWT(username, authToken) {
 		// // Log the entire request
 		// console.log('Request:', request);
 
-        // const str = JSON.stringify({ username: username, token: authToken.token });
+		// const str = JSON.stringify({ username: username, token: authToken.token });
 
-        // console.log(`${str}`)
+		// console.log(`${str}`)
 
 		// // Make the fetch call with the Request object
 		// const response = await fetch(request);
 
-        const requestBody = JSON.stringify({ username: username, token: authToken});
+		const requestBody = JSON.stringify({ username: username, token: authToken });
 
-        console.log("Request body:" + requestBody);
+		console.log('Request body:' + requestBody);
 
 		const response = await fetch(`http://localhost:8090/api/v1/auth/validate`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
-                // ,
+				// ,
 				// Authorization: `Bearer ${authToken.token}`
 			},
 			body: requestBody
 		});
 
 		if (response.ok) {
-            const data = await response.json();
-            const result = data;
+			const data = await response.json();
+			const result = data;
 
-            console.log("Result: " + result);
+			console.log('Result: ' + result);
 
 			return result;
 		} else {
@@ -49,7 +49,7 @@ export async function verifyJWT(username, authToken) {
 
 			console.error(`Username: ${username}, Token: ${authToken}`);
 
-            console.error('JWT verification failed');
+			console.error('JWT verification failed');
 
 			return false;
 		}

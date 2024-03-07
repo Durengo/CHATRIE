@@ -31,7 +31,7 @@
 				console.log(`Login successful with token: ${newToken}`);
 				console.log(`Login successful with username: ${username}`);
 				alert(`New user created and logged in: ${newToken}`);
-				
+
 				window.location.href = '/';
 			} else {
 				console.error(`Login failed with status: ${response.status}`);
