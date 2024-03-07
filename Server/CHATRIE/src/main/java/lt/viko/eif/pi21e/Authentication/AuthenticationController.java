@@ -27,4 +27,11 @@ public class AuthenticationController {
     ) {
         return ResponseEntity.ok(authService.authenticate(request));
     }
+
+    @PostMapping("/validate")
+    public ResponseEntity<Boolean> validate(
+            @RequestBody ValidationRequest request
+    ) throws Exception {
+        return ResponseEntity.ok(authService.validate(request));
+    }
 }
