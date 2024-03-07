@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lt.viko.eif.pi21e.Entities.Role;
 import lt.viko.eif.pi21e.Entities.User;
 import lt.viko.eif.pi21e.Repositories.UserRepository;
+import lt.viko.eif.pi21e.Services.UserService;
 import lt.viko.eif.pi21e.Utility.JwtService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -14,12 +15,14 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class AuthenticationService {
     private final UserRepository userRepository;
+    private final UserService userService;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
-    public AuthenticationResponse register(RegisterRequest request) {
-        // TODO: Add logic to not duplicate usernames.
+    public AuthenticationResponse register(RegisterRequest request) throws IllegalArgumentException {
+        if (userService.checkForDuplicate(request.getUsername()))
+            throw new IllegalArgumentException("User already exists.");
 
         User user = User.builder()
                 .username(request.getUsername())

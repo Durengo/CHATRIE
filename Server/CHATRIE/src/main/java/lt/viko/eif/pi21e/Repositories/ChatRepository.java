@@ -5,5 +5,5 @@ import org.springframework.data.cassandra.repository.CassandraRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ChatRepository extends CassandraRepository<Chat, String>  {
+public interface ChatRepository extends CassandraRepository<Chat, String> {
 }

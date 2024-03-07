@@ -33,6 +33,8 @@
 				alert(`New user created and logged in: ${newToken}`);
 
 				window.location.href = '/';
+			} else if (response.status === 409) {
+				alert('Username already exists');
 			} else {
 				console.error(`Login failed with status: ${response.status}`);
 				try {

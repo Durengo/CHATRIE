@@ -16,4 +16,10 @@ public class UserService {
     public void saveUser(User user) {
         userRepository.save(user);
     }
+
+    public Boolean checkForDuplicate(String nickname) {
+        var user = userRepository.findByUsername(nickname);
+
+        return user.isPresent();
+    }
 }
