@@ -29,10 +29,14 @@ public class ChatController {
     }
 
     @GetMapping(path = "/{id}", produces = consumeProduceType)
-    public ResponseEntity<Chat> getChatById(@PathVariable UUID id) {
-        Optional<Chat> chatOptional = chatRepository.findById(id);
-        return chatOptional.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<List<Chat>> getChatById(@PathVariable UUID id) {
+        List<Chat> chats = chatRepository.findByLobbyUUID(id);
+
+        if (!chats.isEmpty()) {
+            return ResponseEntity.ok(chats);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @PostMapping(consumes = consumeProduceType, produces = consumeProduceType)
@@ -41,14 +45,14 @@ public class ChatController {
         return ResponseEntity.status(HttpStatus.CREATED).body(createdChat);
     }
 
-    @DeleteMapping(path = "/{id}")
-    public ResponseEntity<Void> deleteChat(@PathVariable UUID id) {
-        if (chatRepository.existsById(id)) {
-            chatRepository.deleteById(id);
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
+//    @DeleteMapping(path = "/{id}")
+//    public ResponseEntity<Void> deleteChat(@PathVariable UUID id) {
+//        if (chatRepository.existsById(id)) {
+//            chatRepository.deleteById(id);
+//            return ResponseEntity.noContent().build();
+//        } else {
+//            return ResponseEntity.notFound().build();
+//        }
+//    }
 }
 
