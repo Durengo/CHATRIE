@@ -26,6 +26,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests((authz) -> authz
                         .requestMatchers("/api/v1/auth/demo").authenticated()
                         .requestMatchers("/chat/**").authenticated()
+                        .requestMatchers("/lobby/**").authenticated()
+                        .requestMatchers("/user/**").authenticated()
                         .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers("/api/v1/auth/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/users/**").permitAll()
