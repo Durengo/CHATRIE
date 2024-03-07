@@ -39,14 +39,13 @@ public class DataInitializer implements CommandLineRunner {
                 .role(Role.USER)
                 .build();
 
-        userRepository.save(user);
-
         User user2 = User.builder()
                 .username("user2")
                 .password(passwordEncoder.encode("123"))
                 .role(Role.USER)
                 .build();
 
+        userRepository.save(user);
         userRepository.save(user2);
 
         // Create a lobby
