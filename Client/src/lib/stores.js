@@ -26,6 +26,8 @@ export function logout() {
     sessionStorage.removeItem('authToken');
     authToken.set(null);
     isLoggedIn.set(false);
+
+    window.location.href = '/';
 }
 
 export const apiBaseUrl = writable('http://localhost:8090');
