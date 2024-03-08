@@ -1,3 +1,5 @@
+<!-- TODO: If we attemp to instantly go to a lobby chat all the vars will be null. If we refresh the page everything is good. -->
+
 <script>
 	import { onMount } from 'svelte';
 	import { loginUsername, authToken, currentLobbyId, currentSendToUsername } from '$lib/stores.js';
