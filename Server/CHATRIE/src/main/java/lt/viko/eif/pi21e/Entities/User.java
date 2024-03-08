@@ -1,41 +1,65 @@
 package lt.viko.eif.pi21e.Entities;
 
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.data.cassandra.core.mapping.PrimaryKey;
 import org.springframework.data.cassandra.core.mapping.Table;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.UUID;
+import java.util.*;
 
 @Table("users")
-public class User {
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class User implements UserDetails {
     @PrimaryKey
-    private String nickname;
+    private String username;
     private String password;
 
-    public User(String nickname, String password) {
-        // TODO: Implement logic to not have duplicate nicknames in the database.
-        this.nickname = nickname;
-        this.password = password;
+    @Enumerated(EnumType.STRING)
+    private Role role;
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority(role.name()));
     }
 
-    protected User() {
-
-    }
-
-    public String getNickname() {
-        return nickname;
-    }
-
+    @Override
     public String getPassword() {
         return password;
     }
 
-    // Well, it looks like we NEED a setter otherwise things absolutely break...
-    public void setNickname(String nickname) {
-        this.nickname = nickname;
+    @Override
+    public String getUsername() {
+        return username;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
     }
 
     public void changePassword(String newPassword, String oldPassowrd) throws Exception {

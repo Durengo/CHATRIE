@@ -2,12 +2,14 @@
 	import { page } from '$app/stores';
 	import logo from '$lib/images/svelte-logo.svg';
 	import github from '$lib/images/github.svg';
+	import ProfileIcon from '$lib/components/ProfileIcon.svelte';
+	import { isLoggedIn, logout } from '$lib/stores.js';
 </script>
 
 <header>
 	<div class="corner">
-		<a href="https://kit.svelte.dev">
-			<img src={logo} alt="SvelteKit" />
+		<a href="/profile">
+			<ProfileIcon />
 		</a>
 	</div>
 
@@ -19,15 +21,27 @@
 			<li aria-current={$page.url.pathname === '/' ? 'page' : undefined}>
 				<a href="/">Home</a>
 			</li>
-			<li aria-current={$page.url.pathname === '/about' ? 'page' : undefined}>
-				<a href="/about">About</a>
-			</li>
-			<li aria-current={$page.url.pathname.startsWith('/sverdle') ? 'page' : undefined}>
-				<a href="/sverdle">Sverdle</a>
-			</li>
 			<li aria-current={$page.url.pathname.startsWith('/cassandra') ? 'page' : undefined}>
 				<a href="/cassandra">Cassandra</a>
 			</li>
+			{#if $isLoggedIn}
+				<li aria-current={$page.url.pathname.startsWith('/profile') ? 'page' : undefined}>
+					<!-- <a href="/profile">Profile</a> -->
+					<a>Profile</a>
+				</li>
+				<li aria-current={$page.url.pathname.startsWith('/chat') ? 'page' : undefined}>
+					<a href="/chat">Chats</a>
+				</li>
+			{:else}
+				<li aria-current={$page.url.pathname.startsWith('/login') ? 'page' : undefined}>
+					<a href="/login">Login</a>
+				</li>
+			{/if}
+			{#if $isLoggedIn}
+				<li>
+					<a href="/logout" on:click|preventDefault={logout}>Log Out</a>
+				</li>
+			{/if}
 		</ul>
 		<svg viewBox="0 0 2 3" aria-hidden="true">
 			<path d="M0,0 L0,3 C0.5,3 0.5,3 1,2 L2,0 Z" />
@@ -35,9 +49,9 @@
 	</nav>
 
 	<div class="corner">
-		<a href="https://github.com/sveltejs/kit">
+		<!-- <a href="https://github.com/sveltejs/kit">
 			<img src={github} alt="GitHub" />
-		</a>
+		</a> -->
 	</div>
 </header>
 

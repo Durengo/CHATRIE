@@ -1,7 +1,11 @@
 import docker
 
 # Initialize the Docker client
-client = docker.from_env()
+try:
+    client = docker.from_env()
+except Exception as e:
+    print(f'Error initializing Docker client: {e}\nHave you started the Docker daemon?')
+    exit()
 
 # Define the container name
 container_name = 'cassandra'
