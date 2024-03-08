@@ -1,12 +1,14 @@
 <script>
 	import { onMount } from 'svelte';
-	import { loginUsername, authToken, currentLobbyId } from '$lib/stores.js';
-	import { fetchChatHistory } from '../../../lib/lobbies.js';
+	import { loginUsername, authToken, currentLobbyId, currentSendToUsername } from '$lib/stores.js';
+	import { fetchChatHistory } from '$lib/scripts/lobbies.js';
 	import { formatTimestamp } from '$lib/scripts/utils.js';
 
 	let token = authToken;
 	let chatHistory = [];
 	let lobbyId = currentLobbyId;
+	let currentUser = loginUsername;
+	let sendToUsername = currentSendToUsername;
 
 	onMount(async () => {
 		try {
@@ -18,8 +20,18 @@
 				lobbyId = value;
 			});
 
+			const unsubscribeCurrentUser = loginUsername.subscribe((value) => {
+				currentUser = value;
+			});
+
+			const unsubscribeSendToUsername = currentSendToUsername.subscribe((value) => {
+				sendToUsername = value;
+			});
+
 			console.log('lobbyId:', lobbyId);
 			console.log('token:', token);
+			console.log('currentUser:', currentUser);
+			console.log('sendToUsername:', sendToUsername);
 
 			chatHistory = await fetchChatHistory(lobbyId, token);
 		} catch (error) {

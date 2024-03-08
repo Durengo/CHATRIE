@@ -23,6 +23,12 @@ if (isBrowser()) {
 }
 export const currentLobbyId = writable(storedLobbyId);
 
+let storedSendToUsername = null;
+if (isBrowser()) {
+	storedSendToUsername = sessionStorage.getItem('currentSendToUsername');
+}
+export const currentSendToUsername = writable(storedSendToUsername);
+
 export const isLoggedIn = writable(storedToken !== null);
 export const authToken = writable(storedToken);
 
@@ -32,6 +38,8 @@ export function logout() {
 	authToken.set(null);
 	isLoggedIn.set(false);
 	sessionStorage.removeItem('loginUsername');
+	sessionStorage.removeItem('currentLobbyId');
+	sessionStorage.removeItem('currentSendToUsername');
 
 	window.location.href = '/';
 }
