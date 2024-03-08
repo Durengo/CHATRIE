@@ -3,7 +3,7 @@
 <script>
 	import { onMount } from 'svelte';
 	import { loginUsername, authToken, currentLobbyId, currentSendToUsername } from '$lib/stores.js';
-	import { fetchChatHistory } from '$lib/scripts/lobbies.js';
+	import { sendMessage, fetchChatHistory } from '$lib/scripts/lobbies.js';
 	import { formatTimestamp } from '$lib/scripts/utils.js';
 
 	let token = authToken;
@@ -38,9 +38,10 @@
 			chatHistory = await fetchChatHistory(lobbyId, token);
 		} catch (error) {
 			console.error('Error fetching chat history:', error);
-			// Handle the error appropriately
 		}
 	});
+
+	let newMessage = '';
 </script>
 
 <h1>Chat Room {lobbyId}</h1>
@@ -53,6 +54,14 @@
 			</li>
 		{/each}
 	</ul>
+
+	<input type="text" bind:value={newMessage} placeholder="Enter your message" />
+	<button
+		on:click={() => {
+			sendMessage(lobbyId, currentUser, sendToUsername, newMessage, token);
+			newMessage = '';
+		}}>Send</button
+	>
 {:else}
 	<p>Loading chat history...</p>
 {/if}

@@ -11,7 +11,7 @@ export async function fetchChatHistory(lobbyId, authToken) {
 	const data = await response.json();
 
 	if (response.ok) {
-        console.log('Chat history:', data);
+		console.log('Chat history:', data);
 		chatHistory.set(data);
 		return data;
 	} else {
@@ -38,7 +38,36 @@ export async function fetchLobbies(username, authToken) {
 	}
 }
 
-// export async function fetchChatHistory(lobbyId) {
-// 	// Similar structure to fetchChatRooms, making a request
-// 	// to an endpoint like '/api/chathistory?lobbyId=...'
-// }
+export async function sendMessage(lobbyId, messageFrom, messageTo, message, authToken) {
+	const currentTimestamp = new Date().toISOString();
+
+	const payload = {
+		lobbyChatKey: {
+			lobbyId: lobbyId,
+			timestamp: currentTimestamp
+		},
+		sentBy: messageFrom,
+		sentTo: messageTo,
+		message: message
+	};
+
+	console.log('Payload:', JSON.stringify(payload));
+
+	try {
+		const response = await fetch('http://localhost:8090/chats', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify(payload),
+			Authorization: `Bearer ${authToken}`
+		});
+
+		if (response.ok) {
+			console.log('Message sent!');
+			// Update chat history
+		} else {
+			console.error('Error sending message:', response.statusText);
+		}
+	} catch (error) {
+		console.error('Error sending message:', error);
+	}
+}
