@@ -3,10 +3,10 @@ package lt.viko.eif.pi21e.Services;
 import lombok.RequiredArgsConstructor;
 import lt.viko.eif.pi21e.Entities.User;
 import lt.viko.eif.pi21e.Repositories.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -21,5 +21,13 @@ public class UserService {
         var user = userRepository.findByUsername(nickname);
 
         return user.isPresent();
+    }
+
+    public List<String> getAllusers() {
+        List<User> allUsers = userRepository.findAll();
+
+        return allUsers.stream()
+                .map(User::getUsername)
+                .collect(Collectors.toList());
     }
 }
