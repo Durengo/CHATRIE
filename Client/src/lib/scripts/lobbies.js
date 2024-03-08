@@ -8,12 +8,16 @@ export async function fetchChatHistory(lobbyId, authToken) {
 			headers: { 'Content-Type': 'application/json' },
 			Authorization: `Bearer ${authToken}`
 		});
-		const data = await response.json();
 
 		if (response.ok) {
+			const data = await response.json();
 			console.log('Chat history:', data);
 			sessionStorage.setItem('currentChatHistory', JSON.stringify(data));
 			currentChatHistory.set(data);
+		} else if (response.status === 404) {
+			sessionStorage.setItem('currentChatHistory', JSON.stringify([]));
+			currentChatHistory.set([]);
+			return true;
 		} else {
 			throw new Error(`Error fetching chat history: ${data.message}`);
 		}
@@ -43,6 +47,21 @@ export async function fetchLobbies(username, authToken) {
 }
 
 export async function sendMessage(lobbyId, messageFrom, messageTo, message, authToken) {
+	if (!lobbyId || !messageFrom || !messageTo || !authToken) {
+		console.error('Invalid message data');
+		return;
+	}
+
+	if (messageFrom === messageTo) {
+		console.error('Cannot send message to self');
+		return;
+	}
+
+	if (!message.trim()) {
+		console.error('Message is empty or contains only whitespace');
+		return;
+	}
+
 	const currentTimestamp = new Date().toISOString();
 
 	const payload = {
@@ -74,5 +93,21 @@ export async function sendMessage(lobbyId, messageFrom, messageTo, message, auth
 		}
 	} catch (error) {
 		console.error('Error sending message:', error);
+	}
+}
+
+export async function fetchUsers(authToken) {
+	const response = await fetch('http://localhost:8090/users', {
+		method: 'GET',
+		headers: { 'Content-Type': 'application/json' },
+		Authorization: `Bearer ${authToken}`
+	});
+
+	if (response.ok) {
+		const data = await response.json();
+		console.log('Users:', data);
+		return data;
+	} else {
+		throw new Error('Failed to fetch users');
 	}
 }
