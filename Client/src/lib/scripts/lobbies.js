@@ -1,21 +1,25 @@
 import { writable } from 'svelte/store';
-
-export const chatHistory = writable([]);
+import { currentChatHistory } from '$lib/stores.js';
 
 export async function fetchChatHistory(lobbyId, authToken) {
-	const response = await fetch(`http://localhost:8090/chats/${lobbyId}`, {
-		method: 'GET',
-		headers: { 'Content-Type': 'application/json' },
-		Authorization: `Bearer ${authToken}`
-	});
-	const data = await response.json();
+	try {
+		const response = await fetch(`http://localhost:8090/chats/${lobbyId}`, {
+			method: 'GET',
+			headers: { 'Content-Type': 'application/json' },
+			Authorization: `Bearer ${authToken}`
+		});
+		const data = await response.json();
 
-	if (response.ok) {
-		console.log('Chat history:', data);
-		chatHistory.set(data);
-		return data;
-	} else {
-		throw new Error(`Error fetching chat history: ${data.message}`);
+		if (response.ok) {
+			console.log('Chat history:', data);
+			sessionStorage.setItem('currentChatHistory', JSON.stringify(data));
+			currentChatHistory.set(data);
+		} else {
+			throw new Error(`Error fetching chat history: ${data.message}`);
+		}
+	} catch (error) {
+		console.error('Error fetching chat history:', error);
+		throw error;
 	}
 }
 
@@ -63,6 +67,7 @@ export async function sendMessage(lobbyId, messageFrom, messageTo, message, auth
 
 		if (response.ok) {
 			console.log('Message sent!');
+			fetchChatHistory(lobbyId, authToken);
 			// Update chat history
 		} else {
 			console.error('Error sending message:', response.statusText);

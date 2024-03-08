@@ -29,6 +29,13 @@ if (isBrowser()) {
 }
 export const currentSendToUsername = writable(storedSendToUsername);
 
+let storedChatHistory = null;
+if (isBrowser()) {
+	const storedChatHistoryString = sessionStorage.getItem('currentChatHistory');
+	storedChatHistory = storedChatHistoryString ? JSON.parse(storedChatHistoryString) : null;
+}
+export const currentChatHistory = writable(storedChatHistory || []);
+
 export const isLoggedIn = writable(storedToken !== null);
 export const authToken = writable(storedToken);
 
