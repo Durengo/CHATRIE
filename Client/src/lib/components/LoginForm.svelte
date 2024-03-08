@@ -30,7 +30,7 @@
 				var newToken = sessionStorage.getItem('authToken');
 				console.log(`Login successful with token: ${newToken}`);
 				console.log(`Login successful with username: ${username}`);
-				alert(`Login successful: ${newToken}`);
+				// alert(`Login successful: ${newToken}`);
 
 				window.location.href = '/';
 			} else {
