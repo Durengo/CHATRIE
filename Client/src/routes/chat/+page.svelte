@@ -83,11 +83,6 @@
 			navigateToChat(lobby.lobbyId, username, selectedUser);
 		}
 	};
-	// // Cleanup subscriptions on component destroy
-	// onDestroy(() => {
-	//     unsubscribeUsername();
-	//     unsubscribeToken();
-	// });
 </script>
 
 {#if isValid}
