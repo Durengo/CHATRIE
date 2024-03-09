@@ -95,16 +95,20 @@
 		<h2>Available Chatrooms</h2>
 		<ul>
 			{#each chatRooms as room}
-				<li>
+				<ul>
 					<button
 						on:click={() => {
 							console.log('room:', room);
 							navigateToChat(room.lobbyId, room.user1Nickname, room.user2Nickname);
 						}}
 					>
-						{room.lobbyId} - {room.user1Nickname} - {room.user2Nickname}
+						{#if room.user1Nickname === username}
+							{room.user2Nickname}
+						{:else}
+							{room.user1Nickname}
+						{/if}
 					</button>
-				</li>
+				</ul>
 			{/each}
 		</ul>
 
