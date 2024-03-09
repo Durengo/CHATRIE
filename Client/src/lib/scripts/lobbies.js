@@ -46,6 +46,59 @@ export async function fetchLobbies(username, authToken) {
 	}
 }
 
+export async function createLobby(user1, user2, authToken) {
+	try {
+		// Make sure that the lobby does not exist. As long as the username is the sender or receiver, no new lobby will be created.
+		const lobbies = await fetchLobbies(user1, authToken);
+
+		for (let i = 0; i < lobbies.length; i++) {
+			if (lobbies[i].user1 === user2 || lobbies[i].user2 === user2) {
+				console.log('Lobby already exists');
+				return lobbies[i];
+			}
+		}
+
+		// If the lobby does not exist, create a new one
+		// We need to generate a UUID for the lobby. We'll get this from the server.
+		const lobbyId = await fetch('http://localhost:8090/lobbies/uuid', {
+			method: 'GET',
+			headers: { 'Content-Type': 'application/json' },
+			Authorization: `Bearer ${authToken}`
+		});
+
+		if (lobbyId.ok) {
+			const uuid = await lobbyId.json();
+			console.log('Lobby ID:', uuid);
+
+			const response = await fetch('http://localhost:8090/lobbies', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: `Bearer ${authToken}`
+				},
+				body: JSON.stringify({
+					lobbyId: uuid,
+					user1Nickname: user1,
+					user2Nickname: user2
+				})
+			});
+
+			if (response.ok) {
+				const data = await response.json();
+				console.log('Lobby created:', data);
+				return data;
+			} else {
+				throw new Error(`Error creating lobby: ${response.statusText}`);
+			}
+		} else {
+			throw new Error('Failed to generate lobby ID');
+		}
+	} catch (error) {
+		console.error('Error creating lobby:', error);
+		throw error;
+	}
+}
+
 export async function sendMessage(lobbyId, messageFrom, messageTo, message, authToken) {
 	if (!lobbyId || !messageFrom || !messageTo || !authToken) {
 		console.error('Invalid message data');
@@ -97,7 +150,7 @@ export async function sendMessage(lobbyId, messageFrom, messageTo, message, auth
 }
 
 export async function fetchUsers(authToken) {
-	const response = await fetch('http://localhost:8090/users', {
+	const response = await fetch('http://localhost:8090/users/all', {
 		method: 'GET',
 		headers: { 'Content-Type': 'application/json' },
 		Authorization: `Bearer ${authToken}`

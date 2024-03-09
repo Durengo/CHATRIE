@@ -5,7 +5,7 @@
 	import { goto } from '$app/navigation';
 	import { verifyJWT } from '$lib/scripts/authUtils.js';
 	import { loginUsername, authToken, currentLobbyId, currentSendToUsername } from '$lib/stores.js';
-	import { fetchLobbies } from '$lib/scripts/lobbies.js';
+	import { fetchUsers, createLobby, fetchLobbies } from '$lib/scripts/lobbies.js';
 	import { checkSendToWho } from '$lib/scripts/utils.js';
 	import { tick } from 'svelte';
 
@@ -18,6 +18,8 @@
 	// let { id } = useParams();
 	// let history = get(chatHistory);
 	export const selectedChatId = writable(null);
+	let selectedUser = null;
+	let users = [];
 
 	onMount(async () => {
 		// Subscribe to the stores on mount
@@ -47,6 +49,7 @@
 			if (isValid) {
 				// TODO: Sort the lobbies by most recent message
 				chatRooms = await fetchLobbies(username, token);
+				users = await fetchUsers(token);
 				// history = await fetchChatHistory(username, token);
 			} else {
 				goto('/login', { replaceState: true });
@@ -73,6 +76,13 @@
 
 		goto(`/chat/${lobbyId}`);
 	};
+
+	const createOrOpenChat = async () => {
+		if (selectedUser) {
+			const lobby = await createLobby(username, selectedUser, token);
+			navigateToChat(lobby.lobbyId, username, selectedUser);
+		}
+	};
 	// // Cleanup subscriptions on component destroy
 	// onDestroy(() => {
 	//     unsubscribeUsername();
@@ -97,5 +107,18 @@
 				</li>
 			{/each}
 		</ul>
+
+		<h2>Create or Open Chat</h2>
+		<label for="users">Select a user:</label>
+		<select bind:value={selectedUser} id="users">
+			<option value="" disabled>Select a user</option>
+			{#each users as user}
+				<!-- Skip the object if it is the same as the user. -->
+				{#if user !== username}
+					<option value={user}>{user}</option>
+				{/if}
+			{/each}
+		</select>
+		<button on:click={createOrOpenChat} disabled={!selectedUser}>Create/Open Chat</button>
 	</div>
 {/if}
