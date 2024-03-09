@@ -84,11 +84,11 @@
 	};
 </script>
 
-<h1>Chat Room {lobbyId}</h1>
-
 {#if isLoading}
 	<p>Loading chat history...</p>
 {:else if chatHistory !== undefined && chatHistory !== null}
+	<h1>Chat Room with {sendToUsername}</h1>
+
 	{#if chatHistory.length > 0}
 		<ul>
 			{#each chatHistory as message}

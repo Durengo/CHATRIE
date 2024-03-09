@@ -5,8 +5,13 @@
 	import { goto } from '$app/navigation';
 	import { verifyJWT } from '$lib/scripts/authUtils.js';
 	import { loginUsername, authToken, currentLobbyId, currentSendToUsername } from '$lib/stores.js';
-	import { fetchUsers, createLobby, fetchLobbies } from '$lib/scripts/lobbies.js';
-	import { checkSendToWho } from '$lib/scripts/utils.js';
+	import {
+		sortLobbiesByLatestMessage,
+		fetchUsers,
+		createLobby,
+		fetchLobbies
+	} from '$lib/scripts/lobbies.js';
+	import { formatTimestamp, checkSendToWho } from '$lib/scripts/utils.js';
 	import { tick } from 'svelte';
 
 	let username = loginUsername;
@@ -20,6 +25,7 @@
 	export const selectedChatId = writable(null);
 	let selectedUser = null;
 	let users = [];
+	let isLoading = true;
 
 	onMount(async () => {
 		// Subscribe to the stores on mount
@@ -47,9 +53,15 @@
 			console.log('valid: ', isValid);
 
 			if (isValid) {
-				// TODO: Sort the lobbies by most recent message
-				chatRooms = await fetchLobbies(username, token);
+				// chatRooms = await fetchLobbies(username, token);
+				const fetchedLobbies = await fetchLobbies(username, token);
+				// Use the sorting system and get more data
+				chatRooms = await sortLobbiesByLatestMessage(username, fetchedLobbies, token);
 				users = await fetchUsers(token);
+
+				console.log('chatRooms:', chatRooms);
+
+				isLoading = false;
 				// history = await fetchChatHistory(username, token);
 			} else {
 				goto('/login', { replaceState: true });
@@ -85,26 +97,39 @@
 	};
 </script>
 
-{#if isValid}
+{#if isLoading}
+	<p>Loading chat history...</p>
+{:else if isValid}
 	<div>
 		<h2>Available Chatrooms</h2>
 		<ul>
-			{#each chatRooms as room}
-				<ul>
-					<button
-						on:click={() => {
-							console.log('room:', room);
-							navigateToChat(room.lobbyId, room.user1Nickname, room.user2Nickname);
-						}}
-					>
-						{#if room.user1Nickname === username}
-							{room.user2Nickname}
-						{:else}
-							{room.user1Nickname}
-						{/if}
-					</button>
-				</ul>
-			{/each}
+			{#if Array.isArray(chatRooms)}
+				{#each chatRooms as room}
+					<ul>
+						<button
+							on:click={() => {
+								console.log('room:', room);
+								navigateToChat(room.lobbyId, username, room.withUser);
+							}}
+						>
+							{#if room.lastMessageFrom === 'None'}
+								{'Chat with ' + room.withUser + ' No messages yet.'}
+							{:else}
+								{'Chat with ' +
+									room.withUser +
+									' Time: ' +
+									formatTimestamp(room.timestamp) +
+									' Last Message From: ' +
+									room.lastMessageFrom +
+									' Message: ' +
+									room.message}
+							{/if}
+						</button>
+					</ul>
+				{/each}
+			{:else}
+				<p>Invalid chatRooms data.</p>
+			{/if}
 		</ul>
 
 		<h2>Create or Open Chat</h2>
@@ -120,4 +145,6 @@
 		</select>
 		<button on:click={createOrOpenChat} disabled={!selectedUser}>Create/Open Chat</button>
 	</div>
+{:else}
+	<h2>Error loading chat history.</h2>
 {/if}

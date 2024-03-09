@@ -11,12 +11,34 @@ export async function fetchChatHistory(lobbyId, authToken) {
 
 		if (response.ok) {
 			const data = await response.json();
-			console.log('Chat history:', data);
+			// console.log('Chat history:', data);
 			sessionStorage.setItem('currentChatHistory', JSON.stringify(data));
 			currentChatHistory.set(data);
 		} else if (response.status === 404) {
 			sessionStorage.setItem('currentChatHistory', JSON.stringify([]));
 			currentChatHistory.set([]);
+			return true;
+		} else {
+			throw new Error(`Error fetching chat history: ${data.message}`);
+		}
+	} catch (error) {
+		console.error('Error fetching chat history:', error);
+		throw error;
+	}
+}
+
+export async function onlyReturnChatHistory(lobbyId, authToken) {
+	try {
+		const response = await fetch(`http://localhost:8090/chats/${lobbyId}`, {
+			method: 'GET',
+			headers: { 'Content-Type': 'application/json' },
+			Authorization: `Bearer ${authToken}`
+		});
+
+		if (response.ok) {
+			const data = await response.json();
+			return data;
+		} else if (response.status === 404) {
 			return true;
 		} else {
 			throw new Error(`Error fetching chat history: ${data.message}`);
@@ -39,11 +61,114 @@ export async function fetchLobbies(username, authToken) {
 
 	if (response.ok) {
 		var data = await response.json();
-		console.log('Response: ', data);
+		// console.log('Response: ', data);
 		return data;
 	} else {
 		throw new Error('Failed to fetch chatrooms');
 	}
+}
+
+export async function sortLobbiesByLatestMessage(currentUser, lobbies, authToken) {
+	/* fetchChatHistory returns:
+		{
+			lobbyChatKey: {
+				lobbyId: string,
+				timestamp: string
+			},
+			sentBy: string,
+			sentTo: string,
+			message: string
+		}
+		We will use the timestamp to sort the lobbies by latest message. Also we can display the latest message in the lobby list.
+	*/
+
+	const lobbiesWithLatestMessage = [];
+
+	/* lobbiesWithLatestMessage should look like this:
+		[
+			{
+				lobbyId: string,
+				withUser: string,
+				lastMessageFrom: string,
+				message: string,
+				timestamp: string,
+				hasMessages: boolean
+			},
+			...
+		]
+	*/
+
+	for (let i = 0; i < lobbies.length; i++) {
+		const lobby = lobbies[i];
+
+		try {
+			console.log('Fetching chat history for lobby:', lobby.lobbyId);
+			const chatHistory = await onlyReturnChatHistory(lobby.lobbyId, authToken);
+
+			console.log('Chat history:', chatHistory);
+
+			// Need to handle the usecase where the user is the sender or receiver. We need to display the other user's nickname.
+			let withUserReal = '';
+			if (lobby.user1Nickname === currentUser) {
+				withUserReal = lobby.user2Nickname;
+			} else {
+				withUserReal = lobby.user1Nickname;
+			}
+
+			if (chatHistory && chatHistory.length > 0) {
+				const latestMessage = chatHistory[chatHistory.length - 1];
+
+				lobbiesWithLatestMessage.push({
+					lobbyId: lobby.lobbyId,
+
+					// withUser:
+					// 	latestMessage.sentBy === currentUser ? lobby.user2Nickname : lobby.user1Nickname,
+					withUser: withUserReal,
+					lastMessageFrom: latestMessage.sentBy,
+					message: latestMessage.message,
+					timestamp: latestMessage.lobbyChatKey.timestamp,
+					// Add a flag to indicate that this lobby has messages. We will use this for sorting.
+					hasMessages: true
+				});
+			}
+			// Handle the case where the chat history is empty
+			else {
+				lobbiesWithLatestMessage.push({
+					lobbyId: lobby.lobbyId,
+					// withUser: lobby.user1Nickname === currentUser ? lobby.user2Nickname : lobby.user1Nickname,
+					withUser: withUserReal,
+					lastMessageFrom: 'None',
+					message: 'No messages yet',
+					timestamp: new Date().toISOString(),
+					hasMessages: false
+				});
+			}
+		} catch (error) {
+			console.error('Error fetching chat history:', error);
+		}
+	}
+
+	// Before sort
+	console.log('Before sort:', lobbiesWithLatestMessage);
+
+	// Sort the lobbies by latest message and put lobbies without messages at the bottom
+	const sortedLobbies = lobbiesWithLatestMessage.sort((a, b) => {
+		// Lobby with messages comes first
+		if (a.hasMessages && !b.hasMessages) {
+			return -1;
+		}
+		// Lobby without messages comes last
+		else if (!a.hasMessages && b.hasMessages) {
+			return 1;
+		} else {
+			return new Date(b.timestamp) - new Date(a.timestamp);
+		}
+	});
+
+	// After sort
+	console.log('After sort:', sortedLobbies);
+
+	return sortedLobbies;
 }
 
 export async function createLobby(user1, user2, authToken) {
