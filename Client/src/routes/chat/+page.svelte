@@ -119,9 +119,9 @@
 									room.withUser +
 									' Time: ' +
 									formatTimestamp(room.timestamp) +
-									' Last Message From: ' +
+									' Last Message From: "' +
 									room.lastMessageFrom +
-									' Message: ' +
+									'"" Message: ' +
 									room.message}
 							{/if}
 						</button>
