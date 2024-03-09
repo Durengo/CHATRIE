@@ -113,7 +113,7 @@
 							}}
 						>
 							{#if room.lastMessageFrom === 'None'}
-								{'Chat with ' + room.withUser + ' No messages yet.'}
+								{'Chat with "' + room.withUser + '" No messages yet.'}
 							{:else}
 								{'Chat with ' +
 									room.withUser +
