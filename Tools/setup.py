@@ -34,7 +34,7 @@ def start_cassandra_container():
             remove=True
         )
 
-        print(f'Cassandra container ({container_name}) started successfully.')
+        print(f'Cassandra container ({container_name}) started successfully on port [9042].')
 
         print(f'Please wait for a minute or two for the Cassandra container to start and setup...')
 
@@ -71,9 +71,41 @@ def create_keyspace():
     except Exception as e:
         print(f'Error creating keyspace: {e}')
 
+# docker run --rm -it -p 15672:15672 -p 5672:5672 --hostname my-rabbit --name some-rabbit rabbitmq:3-management
+def start_rabbitmqcontainer_container():
+    try:
+        # Pull the latest RabbitMQ image if not already present
+        client.images.pull('rabbitmq:3-management')
+
+        # Create a network if it doesn't exist
+        network_name = 'rabbitmq'
+        try:
+            client.networks.create(network_name)
+        except docker.errors.APIError:
+            # Network already exists
+            pass
+
+        # Start the RabbitMQ container
+        container_name = 'rabbitmq'
+        client.containers.run(
+            'rabbitmq:3-management',
+            name=container_name,
+            hostname='my-rabbit',
+            network=network_name,
+            ports={'15672': '15672', '5672': '5672'},
+            detach=True,
+            remove=True
+        )
+
+        print(f'RabbitMQ container ({container_name}) started successfully.')
+        print(f'You can access the RabbitMQ management console at http://localhost:15672/')
+
+    except Exception as e:
+        print(f'Error starting RabbitMQ container: {e}')
+
 if __name__ == '__main__':
 
-    function_to_run = input("0. Exit\n1. Start Cassandra Container\n2. Create Keyspace (\"testspace\")\n3. Stop Cassandra Container\nChoose (0-3)\n")
+    function_to_run = input("0. Exit\n1. Start Cassandra Container\n2. Create Keyspace (\"testspace\")\n3. Stop Cassandra Container\n4. Setup and start RabbitMQ container.\nChoose (0-4)\n")
 
     if function_to_run == "0":
         exit()
@@ -83,5 +115,7 @@ if __name__ == '__main__':
         create_keyspace()
     elif function_to_run == "3":
         stop_cassandra_container()
+    elif function_to_run == "4":
+        start_rabbitmqcontainer_container()
     else:
         print("Invalid choice")
