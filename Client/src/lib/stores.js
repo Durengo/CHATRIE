@@ -23,6 +23,19 @@ if (isBrowser()) {
 }
 export const currentLobbyId = writable(storedLobbyId);
 
+let storedSendToUsername = null;
+if (isBrowser()) {
+	storedSendToUsername = sessionStorage.getItem('currentSendToUsername');
+}
+export const currentSendToUsername = writable(storedSendToUsername);
+
+let storedChatHistory = null;
+if (isBrowser()) {
+	const storedChatHistoryString = sessionStorage.getItem('currentChatHistory');
+	storedChatHistory = storedChatHistoryString ? JSON.parse(storedChatHistoryString) : null;
+}
+export const currentChatHistory = writable(storedChatHistory || []);
+
 export const isLoggedIn = writable(storedToken !== null);
 export const authToken = writable(storedToken);
 
@@ -32,6 +45,8 @@ export function logout() {
 	authToken.set(null);
 	isLoggedIn.set(false);
 	sessionStorage.removeItem('loginUsername');
+	sessionStorage.removeItem('currentLobbyId');
+	sessionStorage.removeItem('currentSendToUsername');
 
 	window.location.href = '/';
 }

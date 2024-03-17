@@ -6,3 +6,11 @@ export function formatTimestamp(timestampString) {
 
 	return `${hours}:${minutes}:${seconds}`;
 }
+
+export function checkSendToWho(senderUsername, nickname1, nickname2) {
+	if (senderUsername === nickname1) {
+		return nickname2;
+	} else {
+		return nickname1;
+	}
+}

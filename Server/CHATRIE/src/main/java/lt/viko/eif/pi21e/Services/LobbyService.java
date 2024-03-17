@@ -1,9 +1,14 @@
 package lt.viko.eif.pi21e.Services;
 
 import lombok.RequiredArgsConstructor;
+import lt.viko.eif.pi21e.CHATRIE;
 import lt.viko.eif.pi21e.Entities.Chat;
 import lt.viko.eif.pi21e.Entities.Lobby;
+import lt.viko.eif.pi21e.Entities.User;
 import lt.viko.eif.pi21e.Repositories.LobbyRepository;
+import lt.viko.eif.pi21e.Repositories.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +20,7 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 public class LobbyService {
     private final LobbyRepository lobbyRepository;
+    private final UserRepository userRepository;
 
     public Lobby createLobby(String user1, String user2) {
         Lobby lobby = new Lobby(UUID.randomUUID(), user1, user2);
@@ -68,5 +74,30 @@ public class LobbyService {
         uniqueLobbies.addAll(user4Lobbies);
 
         return new ArrayList<>(uniqueLobbies);
+    }
+
+    public UUID generateUniqueUUID() {
+        UUID uniqueUUID = UUID.randomUUID();
+
+        while (lobbyRepository.existsById(uniqueUUID)) {
+            uniqueUUID = UUID.randomUUID();
+        }
+
+        return uniqueUUID;
+    }
+
+    public Boolean checkIfUsersExist(String user1Nickname, String user2Nickname) {
+        List<User> allUsers = userRepository.findAll();
+
+        var nicknames = allUsers.stream()
+                .map(User::getUsername)
+                .toList();
+
+        return (nicknames.contains(user1Nickname) && nicknames.contains(user2Nickname));
+    }
+
+    public Boolean checkIfLobbyExists(String user1Nickname, String user2Nickname) {
+        Optional<Lobby> lobby = findLobby(user1Nickname, user2Nickname);
+        return lobby.isPresent();
     }
 }

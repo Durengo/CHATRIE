@@ -45,8 +45,22 @@ public class DataInitializer implements CommandLineRunner {
                 .role(Role.USER)
                 .build();
 
+        User user3 = User.builder()
+                .username("user3")
+                .password(passwordEncoder.encode("123"))
+                .role(Role.USER)
+                .build();
+
+        User user4 = User.builder()
+                .username("user4")
+                .password(passwordEncoder.encode("123"))
+                .role(Role.USER)
+                .build();
+
         userRepository.save(user);
         userRepository.save(user2);
+        userRepository.save(user3);
+        userRepository.save(user4);
 
         // Create a lobby
         Lobby lobby;
@@ -59,9 +73,16 @@ public class DataInitializer implements CommandLineRunner {
                     .user2Nickname(user2.getUsername())
                     .build();
 
-            logger.info("New lobby created: " + lobby.toString());
+            UUID uuid2 = UUID.randomUUID();
+
+            Lobby lobby2 = Lobby.builder()
+                    .lobbyId(uuid2)
+                    .user1Nickname(user.getUsername())
+                    .user2Nickname(user3.getUsername())
+                    .build();
 
             lobbyRepository.save(lobby);
+            lobbyRepository.save(lobby2);
         } else {
             lobby = lobbyRepository.findAll().getFirst();
         }
@@ -69,6 +90,7 @@ public class DataInitializer implements CommandLineRunner {
         // Create some chats
         if (chatRepository.findAll().isEmpty()) {
             var today = new Date();
+            today = new Date(today.getTime() - 560 * 1000);
 
             long millisecondsToAdd = 10 * 1000;
             LobbyChatKey lobbyChatKey1 = new LobbyChatKey(lobby.getLobbyId(), new Date(today.getTime() + millisecondsToAdd));

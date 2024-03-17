@@ -1,8 +1,8 @@
 # CHATRIE
 
-Basic chatting app for NOSQL course.
+Simple chatting app.
 
-* The backend is made with [Cassandra](https://cassandra.apache.org/).
+* The backend is made with [Spring Boot](https://spring.io/), [Cassandra](https://cassandra.apache.org/), [RabbitMQ](https://www.rabbitmq.com/)
 * The frontend is made with [Node.js](https://nodejs.org/), [Svelte](https://svelte.dev/) + [Typescript](https://svelte.dev/docs/typescript)
 
 ## Requirements
@@ -10,13 +10,7 @@ Basic chatting app for NOSQL course.
 1. [Node.js](https://nodejs.org/)
 2. [Python>=3.0](https://www.python.org/)
 3. [Docker](https://www.docker.com/)
-
-## Packages used
-
-These packages are automatically installed by following the [setup](#setup) section.
-
-1. [Python Docker Package](https://pypi.org/project/docker/)
-2. [NPM Cassandra Package](https://www.npmjs.com/package/cassandra/)
+4. The following ports to be free: 8090 (Spring Boot backend), 8089 (Spring Boot WebSocket), 9042 (Cassandra container), 5672 (RabbitMQ server), 15672 (RabbitMQ dashboard), 5173 (Frontend Web App)
 
 ## Setup
 
@@ -24,18 +18,102 @@ These packages are automatically installed by following the [setup](#setup) sect
     * $python -m venv venv
     * $./venv/Scripts/activate
     * pip install -r ./requirements.txt
-2. Setup the Docker environment with the provided scripts
+2. Setup the Docker environment with the provided scripts (Cassandra and RabbitMQ containers)
     * Make sure that Docker Desktop is running
     * $python ./Tools/setup.py
     * 1 To setup and run the Cassandra container (it will take a minute or two for Docker to set the server up so other commands might throw errors during this time)
     * 2 To setup the keyspace
     * 3 To stop the container
     * Deleting the container is currently done manually
+    * 4 To setup and run the RabbitMQ container
 3. Setup the backend
+    * Using and IDE like IntelliJ open the "Server/CHATRIE" project, wait for setup, and run the main function
 4. Setup the frontend
     * $npm install
-5. Launch the app
+5. Launch the web app
     * $npm run dev -- --open
+
+## Post-Setup
+
+* Swagger can be accessed at <http://localhost:8090/swagger-ui/index.html>. It requires a token to use authenticated endpoints.
+* Web app can be accessed at <http://localhost:5173/>.
+* RabbitMQ dashboard can be accessed at <http://localhost:15672/>.
+
+## Showcase
+
+### Landing Page
+
+![Landing Page](./Documentation/Showcase/1-landing-page.png)
+
+### Login Page
+
+![Login Page](./Documentation/Showcase/2-login-page.png)
+
+### Chat Page
+
+![Chat Page](./Documentation/Showcase/3-chat-page.png)
+
+### Specific Chat Page
+
+![Specific Chat Page](./Documentation/Showcase/4-specific-chat.png)
+
+### Realtime Chat Updates
+
+![Realtime Chat Updates](./Documentation/Showcase/5-realtime-chat.gif)
+
+### Engage in New Chats with Existing Users
+
+![Engage in New Chats with Existing Users](./Documentation/Showcase/6-new-chats.gif)
+
+## Packages used
+
+### Backend
+
+Spring Boot Packages:
+
+1. [spring-boot-starter](https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter)
+2. [spring-boot-starter-websocket](https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-websocket)
+3. [spring-data-envers](https://mvnrepository.com/artifact/org.springframework.data/spring-data-envers)
+4. [spring-boot-starter-security](https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-security) - used for user authentication and authorization (utilizes JWT)
+
+Security:
+
+1. [JJWT-API](https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt-api)
+2. [JJWT-IMPL](https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt-impl)
+3. [JJWT-JACKSON](https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt-jackson)
+
+Database:
+
+1. [Cassandra](https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-data-cassandra)
+
+Message Broker:
+
+1. [RabbitMQ](https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-amqp)
+
+Utility:
+
+1. [Lombok](https://mvnrepository.com/artifact/org.projectlombok/lombok) - boilerplate code reduction
+
+Sockets:
+
+1. [SocketIO/NettySocketIO](https://mvnrepository.com/artifact/com.corundumstudio.socketio/netty-socketio) - could not use built-in Spring Boot Websocket functionality since SockJS or WS protocol did not properly connect through SvelteKit, so an alternative had to be used
+
+Testing:
+
+1. [junit](https://mvnrepository.com/artifact/junit/junit)
+
+Logging:
+
+1. [slf4j](https://mvnrepository.com/artifact/org.slf4j/slf4j-api)
+2. [logback-classic](https://mvnrepository.com/artifact/ch.qos.logback/logback-classic)
+
+### Frontend
+
+These packages are automatically installed by following the [setup](#setup) section.
+
+1. [Python Docker Package](https://pypi.org/project/docker/)
+2. [NPM Cassandra Package](https://www.npmjs.com/package/cassandra/)
+3. [socket.io-client](https://www.npmjs.com/package/socket.io-client)
 
 ## More
 

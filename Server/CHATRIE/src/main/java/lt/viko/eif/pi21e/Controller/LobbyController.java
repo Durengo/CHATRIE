@@ -38,6 +38,11 @@ public class LobbyController {
         }
     }
 
+    @GetMapping("/uuid")
+    public ResponseEntity<UUID> findLobbyByUsers() {
+        return ResponseEntity.ok(lobbyService.generateUniqueUUID());
+    }
+
     @GetMapping(path = "/{lobbyId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Lobby> getLobbyById(@PathVariable UUID lobbyId) {
         Optional<Lobby> lobbyOptional = lobbyRepository.findById(lobbyId);
@@ -45,9 +50,21 @@ public class LobbyController {
     }
 
     @PostMapping(path = "", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Lobby> createLobby(@RequestBody Lobby lobby) {
-        Lobby savedLobby = lobbyRepository.save(lobby);
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedLobby);
+    public ResponseEntity<?> createLobby(@RequestBody Lobby lobby) {
+        var result = lobbyService.checkIfUsersExist(lobby.getUser1Nickname(), lobby.getUser2Nickname());
+        var result2 = lobbyService.checkIfLobbyExists(lobby.getUser1Nickname(), lobby.getUser2Nickname());
+
+        // Create and return lobby if users exists and no lobby exists
+        if (result && !result2) {
+            Lobby savedLobby = lobbyRepository.save(lobby);
+            return ResponseEntity.status(HttpStatus.CREATED).body(savedLobby);
+        }
+        // Return lobby if it already exists
+        else if (result) {
+            return ResponseEntity.ok().body(lobbyService.findSpecific(lobby.getUser1Nickname(), lobby.getUser2Nickname()));
+        } else {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Nicknames not found in system.");
+        }
     }
 
     @DeleteMapping(path = "/{lobbyId}")
