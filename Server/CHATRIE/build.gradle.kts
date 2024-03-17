@@ -33,6 +33,8 @@ dependencies {
     implementation("org.springframework.data:spring-data-envers")
     // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-security
     implementation("org.springframework.boot:spring-boot-starter-security")
+    // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-websocket
+    implementation("org.springframework.boot:spring-boot-starter-websocket")
 
     // Cassandra
     implementation("org.springframework.boot:spring-boot-starter-data-cassandra")
@@ -56,6 +58,11 @@ dependencies {
     // https://mvnrepository.com/artifact/org.projectlombok/lombok
     compileOnly("org.projectlombok:lombok:1.18.30")
     annotationProcessor("org.projectlombok:lombok:1.18.30")
+
+    // SocketIO
+    // https://mvnrepository.com/artifact/com.corundumstudio.socketio/netty-socketio
+    implementation("com.corundumstudio.socketio:netty-socketio:2.0.9")
+
 }
 
 tasks.test {
