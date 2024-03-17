@@ -29,7 +29,6 @@ dependencies {
     // SPRING BOOT
     // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot
     implementation("org.springframework.boot:spring-boot-starter")
-    implementation("org.springframework.boot:spring-boot-starter-websocket")
     implementation("org.springframework.data:spring-data-envers")
     // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-security
     implementation("org.springframework.boot:spring-boot-starter-security")
