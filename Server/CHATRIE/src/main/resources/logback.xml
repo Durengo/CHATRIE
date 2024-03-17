@@ -11,6 +11,5 @@
     </root>
 
     <logger name="lt.viko.eif.pi21e" level="trace"/>
-    <logger name="o.s.d.cassandra.core.cql.CqlTemplate" level="trace"/>
 
 </configuration>
