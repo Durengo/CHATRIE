@@ -52,19 +52,24 @@ export async function onlyReturnChatHistory(lobbyId, authToken) {
 export async function fetchLobbies(username, authToken) {
 	// console.log(`Request: http://localhost:8090/lobbies/user/${username}}`);
 
-	const response = await fetch(`http://localhost:8090/lobbies/user/${username}`, {
-		method: 'GET',
-		headers: { 'Content-Type': 'application/json' },
-		// body: JSON.stringify({ username, password }),
-		Authorization: `Bearer ${authToken}`
-	});
+	try {
+		const response = await fetch(`http://localhost:8090/lobbies/user/${username}`, {
+			method: 'GET',
+			headers: { 'Content-Type': 'application/json' },
+			// body: JSON.stringify({ username, password }),
+			Authorization: `Bearer ${authToken}`
+		});
 
-	if (response.ok) {
-		var data = await response.json();
-		// console.log('Response: ', data);
-		return data;
-	} else {
-		throw new Error('Failed to fetch chatrooms');
+		if (response.ok) {
+			var data = await response.json();
+			// console.log('Response: ', data);
+			return data;
+		} else {
+			throw new Error('Failed to fetch chatrooms');
+		}
+	} catch (error) {
+		console.error('Error fetching chatrooms:', error);
+		throw error;
 	}
 }
 
@@ -102,10 +107,10 @@ export async function sortLobbiesByLatestMessage(currentUser, lobbies, authToken
 		const lobby = lobbies[i];
 
 		try {
-			console.log('Fetching chat history for lobby:', lobby.lobbyId);
-			const chatHistory = await onlyReturnChatHistory(lobby.lobbyId, authToken);
+			// console.log('Fetching chat history for lobby:', lobby.lobbyId);
+			let chatHistory = await onlyReturnChatHistory(lobby.lobbyId, authToken);
 
-			console.log('Chat history:', chatHistory);
+			// console.log('Chat history:', chatHistory);
 
 			// Need to handle the usecase where the user is the sender or receiver. We need to display the other user's nickname.
 			let withUserReal = '';
@@ -113,6 +118,20 @@ export async function sortLobbiesByLatestMessage(currentUser, lobbies, authToken
 				withUserReal = lobby.user2Nickname;
 			} else {
 				withUserReal = lobby.user1Nickname;
+			}
+
+			if (chatHistory === true) {
+				console.log('No chat history');
+				lobbiesWithLatestMessage.push({
+					lobbyId: lobby.lobbyId,
+					// withUser: lobby.user1Nickname === currentUser ? lobby.user2Nickname : lobby.user1Nickname,
+					withUser: withUserReal,
+					lastMessageFrom: 'None',
+					message: 'No messages yet',
+					timestamp: new Date().toISOString(),
+					hasMessages: false
+				});
+				continue;
 			}
 
 			if (chatHistory && chatHistory.length > 0) {
@@ -145,6 +164,15 @@ export async function sortLobbiesByLatestMessage(currentUser, lobbies, authToken
 			}
 		} catch (error) {
 			console.error('Error fetching chat history:', error);
+			// If there's an error, push a placeholder object to prevent breaking the UI
+			lobbiesWithLatestMessage.push({
+				lobbyId: lobby.lobbyId,
+				withUser: 'Unknown',
+				lastMessageFrom: 'None',
+				message: 'Error fetching chat history',
+				timestamp: new Date().toISOString(),
+				hasMessages: false
+			});
 		}
 	}
 
@@ -224,6 +252,43 @@ export async function createLobby(user1, user2, authToken) {
 	}
 }
 
+export async function sendMessageToBackendAndSocket(chatObject, authToken, socket) {
+	if (!authToken || !chatObject || !socket) {
+		console.error('Invalid message data');
+		return;
+	}
+
+	console.log('Sending message to backend:', chatObject);
+	console.log('authToken:', authToken);
+	console.log('socket:', socket);
+
+	// Sending message to backend
+	try {
+		const response = await fetch('http://localhost:8090/chats', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify(chatObject),
+			Authorization: `Bearer ${authToken}`
+		});
+
+		if (response.ok) {
+			console.log('Message sent!');
+			fetchChatHistory(chatObject.lobbyChatKey.lobbyId, authToken);
+			// Update chat history
+		} else {
+			console.error('Error sending message:', response.statusText);
+		}
+	} catch (error) {
+		console.error('Error sending message to backend:', error);
+	}
+
+	try {
+		socket.emit('send_chat', chatObject);
+	} catch (error) {
+		console.error('Error sending message to socket:', error);
+	}
+}
+
 export async function sendMessage(lobbyId, messageFrom, messageTo, message, authToken) {
 	if (!lobbyId || !messageFrom || !messageTo || !authToken) {
 		console.error('Invalid message data');
@@ -252,7 +317,7 @@ export async function sendMessage(lobbyId, messageFrom, messageTo, message, auth
 		message: message
 	};
 
-	console.log('Payload:', JSON.stringify(payload));
+	// console.log('Payload:', JSON.stringify(payload));
 
 	try {
 		const response = await fetch('http://localhost:8090/chats', {

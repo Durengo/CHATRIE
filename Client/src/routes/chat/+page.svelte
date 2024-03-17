@@ -12,7 +12,8 @@
 		fetchLobbies
 	} from '$lib/scripts/lobbies.js';
 	import { formatTimestamp, checkSendToWho } from '$lib/scripts/utils.js';
-	import { tick } from 'svelte';
+	import { onDestroy } from 'svelte';
+	import { io } from 'socket.io-client';
 
 	let username = loginUsername;
 	let token = authToken;
@@ -26,6 +27,8 @@
 	let selectedUser = null;
 	let users = [];
 	let isLoading = true;
+
+	let sockets = [];
 
 	onMount(async () => {
 		// Subscribe to the stores on mount
@@ -53,13 +56,50 @@
 			console.log('valid: ', isValid);
 
 			if (isValid) {
-				// chatRooms = await fetchLobbies(username, token);
-				const fetchedLobbies = await fetchLobbies(username, token);
-				// Use the sorting system and get more data
-				chatRooms = await sortLobbiesByLatestMessage(username, fetchedLobbies, token);
-				users = await fetchUsers(token);
+				try {
+					// chatRooms = await fetchLobbies(username, token);
+					const fetchedLobbies = await fetchLobbies(username, token);
+					// Use the sorting system and get more data
+					chatRooms = await sortLobbiesByLatestMessage(username, fetchedLobbies, token);
+					users = await fetchUsers(token);
 
-				console.log('chatRooms:', chatRooms);
+					// if (lobbyId && username && chatRooms.length > 0) {
+					if (username && chatRooms.length > 0) {
+						// Create a socket for each chatroom that is open
+						chatRooms.forEach((room) => {
+							// console.log('room:', room);
+							const { lobbyId, withUser } = room;
+
+							// Create a socket for each chatroom
+							const socket = io('http://localhost:8089', {
+								query: { room: lobbyId, from: username, to: withUser }
+							});
+							const this_queue = `chat-message-${lobbyId}-${username}`;
+
+							socket.on(`${this_queue}`, async (data) => {
+								try {
+									// receivedMessage = data;
+									console.log('Received chat message:', data);
+									// fetchChatHistory(lobbyId, authToken);
+									const fetchedLobbies = await fetchLobbies(username, token);
+									chatRooms = await sortLobbiesByLatestMessage(username, fetchedLobbies, token);
+									users = await fetchUsers(token);
+								} catch (error) {
+									console.error('Error fetching lobby history:', error);
+								}
+							});
+
+							socket.on('connect', () => {
+								console.log('Connected to WebSocket server');
+							});
+
+							// Add the socket to the list of sockets
+							sockets.push(socket);
+						});
+					}
+				} catch (error) {
+					console.error('Error fetching chat history:', error);
+				}
 
 				isLoading = false;
 				// history = await fetchChatHistory(username, token);
@@ -95,6 +135,18 @@
 			navigateToChat(lobby.lobbyId, username, selectedUser);
 		}
 	};
+
+	const disconnectFromSockets = () => {
+		if (sockets.length > 0) {
+			sockets.forEach((socket) => {
+				socket.disconnect();
+			});
+		}
+	};
+
+	onDestroy(() => {
+		disconnectFromSockets();
+	});
 </script>
 
 {#if isLoading}
@@ -109,6 +161,7 @@
 						<button
 							on:click={() => {
 								console.log('room:', room);
+								disconnectFromSockets();
 								navigateToChat(room.lobbyId, username, room.withUser);
 							}}
 						>
@@ -121,7 +174,7 @@
 									formatTimestamp(room.timestamp) +
 									' Last Message From: "' +
 									room.lastMessageFrom +
-									'"" Message: ' +
+									'" Message: ' +
 									room.message}
 							{/if}
 						</button>
