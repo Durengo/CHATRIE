@@ -57,16 +57,18 @@ public class SocketSessionManager {
         }
     }
 
-    // Runs every 1 second for testing.
-    @Scheduled(fixedDelay = 1000)
+    // Very buggy. Disabled for now.
+//    @Scheduled(fixedDelay = 15000)
     public void checkSocketConnections() {
         for (Map.Entry<String, SocketIOClient> entry : userSessions.entrySet()) {
+//            logger.info("Checking this {}", String.format("%s", entry.getKey()));
+
             String key = entry.getKey();
             SocketIOClient session = entry.getValue();
             if (!session.isChannelOpen()) {
-                String[] keys = key.split("-");
-                removeUserSession(keys[0], keys[1], keys[2]);
+                String[] keys = key.split("_");
                 logger.warn("Session is being dropped as it's no longer connected.");
+                removeUserSession(keys[0], keys[1], keys[2]);
             }
         }
     }
