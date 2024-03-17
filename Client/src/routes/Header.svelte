@@ -8,7 +8,8 @@
 
 <header>
 	<div class="corner">
-		<a href="/profile">
+		<!-- <a href="/profile"> -->
+		<a href="/">
 			<ProfileIcon />
 		</a>
 	</div>
@@ -21,9 +22,9 @@
 			<li aria-current={$page.url.pathname === '/' ? 'page' : undefined}>
 				<a href="/">Home</a>
 			</li>
-			<li aria-current={$page.url.pathname.startsWith('/cassandra') ? 'page' : undefined}>
+			<!-- <li aria-current={$page.url.pathname.startsWith('/cassandra') ? 'page' : undefined}>
 				<a href="/cassandra">Cassandra</a>
-			</li>
+			</li> -->
 			{#if $isLoggedIn}
 				<li aria-current={$page.url.pathname.startsWith('/profile') ? 'page' : undefined}>
 					<!-- <a href="/profile">Profile</a> -->

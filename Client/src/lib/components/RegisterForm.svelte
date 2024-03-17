@@ -28,9 +28,9 @@
 				sessionStorage.setItem('loginUsername', username);
 
 				var newToken = sessionStorage.getItem('authToken');
-				console.log(`Login successful with token: ${newToken}`);
-				console.log(`Login successful with username: ${username}`);
-				alert(`New user created and logged in: ${newToken}`);
+				// console.log(`Login successful with token: ${newToken}`);
+				// console.log(`Login successful with username: ${username}`);
+				// alert(`New user created and logged in: ${newToken}`);
 
 				window.location.href = '/';
 			} else if (response.status === 409) {

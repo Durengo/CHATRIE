@@ -3,6 +3,7 @@ package lt.viko.eif.pi21e.Controller;
 import lombok.RequiredArgsConstructor;
 import lt.viko.eif.pi21e.Entities.User;
 import lt.viko.eif.pi21e.Repositories.UserRepository;
+import lt.viko.eif.pi21e.Services.UserService;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,6 +20,7 @@ import java.util.Optional;
 public class UserController {
     private static final String consumeProduceType = MediaType.APPLICATION_JSON_VALUE;
     private final UserRepository userRepository;
+    private final UserService userService;
 
     @GetMapping(produces = consumeProduceType)
     public List<User> getUserList() {
@@ -30,6 +32,11 @@ public class UserController {
         Optional<User> userOptional = userRepository.findById(username);
         return userOptional.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @GetMapping(path = "/all", produces = consumeProduceType)
+    public ResponseEntity<List<String>> getAllUsers() {
+        return ResponseEntity.ok(userService.getAllusers());
     }
 
     @PostMapping(consumes = consumeProduceType, produces = consumeProduceType)

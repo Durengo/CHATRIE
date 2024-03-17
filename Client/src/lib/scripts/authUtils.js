@@ -24,7 +24,7 @@ export async function verifyJWT(username, authToken) {
 
 		const requestBody = JSON.stringify({ username: username, token: authToken });
 
-		console.log('Request body:' + requestBody);
+		// console.log('Request body:' + requestBody);
 
 		const response = await fetch(`http://localhost:8090/api/v1/auth/validate`, {
 			method: 'POST',
@@ -40,7 +40,7 @@ export async function verifyJWT(username, authToken) {
 			const data = await response.json();
 			const result = data;
 
-			console.log('Result: ' + result);
+			// console.log('Result: ' + result);
 
 			return result;
 		} else {
