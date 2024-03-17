@@ -10,6 +10,7 @@ Simple chatting app.
 1. [Node.js](https://nodejs.org/)
 2. [Python>=3.0](https://www.python.org/)
 3. [Docker](https://www.docker.com/)
+4. The following ports to be free: 8090 (Spring Boot backend), 8089 (Spring Boot WebSocket), 9042 (Cassandra container), 5672 (RabbitMQ server), 15672 (RabbitMQ dashboard), 5173 (Frontend Web App)
 
 ## Setup
 
@@ -31,6 +32,38 @@ Simple chatting app.
     * $npm install
 5. Launch the web app
     * $npm run dev -- --open
+
+## Post-Setup
+
+* Swagger can be accessed at <http://localhost:8090/swagger-ui/index.html>. It requires a token to use authenticated endpoints.
+* Web app can be accessed at <http://localhost:5173/>.
+* RabbitMQ dashboard can be accessed at <http://localhost:15672/>.
+
+## Showcase
+
+### Landing Page
+
+![Landing Page](./Documentation/Showcase/1-landing-page.png)
+
+### Login Page
+
+![Login Page](./Documentation/Showcase/2-login-page.png)
+
+### Chat Page
+
+![Chat Page](./Documentation/Showcase/3-chat-page.png)
+
+### Specific Chat Page
+
+![Specific Chat Page](./Documentation/Showcase/4-specific-chat.png)
+
+### Realtime Chat Updates
+
+![Realtime Chat Updates](./Documentation/Showcase/5-realtime-chat.gif)
+
+### Engage in New Chats with Existing Users
+
+![Engage in New Chats with Existing Users](./Documentation/Showcase/6-new-chats.gif)
 
 ## Packages used
 
