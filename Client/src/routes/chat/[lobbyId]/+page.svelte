@@ -85,10 +85,10 @@
 				return;
 			}
 
-			console.log('lobbyId:', lobbyId);
-			console.log('token:', token);
-			console.log('currentUser:', currentUser);
-			console.log('sendToUsername:', sendToUsername);
+			// console.log('lobbyId:', lobbyId);
+			// console.log('token:', token);
+			// console.log('currentUser:', currentUser);
+			// console.log('sendToUsername:', sendToUsername);
 
 			{
 				if (lobbyId && currentUser && sendToUsername) {
@@ -97,25 +97,25 @@
 					});
 
 					socket.on('connect', () => {
-						console.log('Connected to WebSocket server');
+						// console.log('Connected to WebSocket server');
 					});
 
 					socket.on('disconnect', () => {
-						console.log('Disconnected from WebSocket server');
+						// console.log('Disconnected from WebSocket server');
 					});
 
 					const this_queue = `chat-message-${lobbyId}-${currentUser}`;
 
-					console.log(`This user queue is: ${this_queue}`);
+					// console.log(`This user queue is: ${this_queue}`);
 
 					socket.on(`${this_queue}`, (data) => {
 						// receivedMessage = data;
-						console.log('Received chat message:', data);
+						// console.log('Received chat message:', data);
 						fetchChatHistory(lobbyId, authToken);
 					});
 
 					socket.on('receive_chat', (data) => {
-						console.log('Received chat message:', data);
+						// console.log('Received chat message:', data);
 						// Update UI to display the incoming chat message
 					});
 				}
@@ -137,7 +137,9 @@
 	const handleKeyDown = (event) => {
 		if (event.key === 'Enter' && !event.shiftKey) {
 			event.preventDefault();
-			sendMessage(lobbyId, currentUser, sendToUsername, newMessage, token);
+			const chatMessage = formChatObject(lobbyId, currentUser, sendToUsername, newMessage);
+			// console.log('chatMessage:', chatMessage);
+			sendMessageToBackendAndSocket(chatMessage, token, socket);
 			newMessage = '';
 		}
 	};
@@ -185,7 +187,7 @@
 		// window.removeEventListener('resize', handleWindowResize);
 		if (socket) {
 			socket.disconnect();
-			console.log('Socket disconnected');
+			// console.log('Socket disconnected');
 		}
 	});
 </script>
@@ -217,7 +219,7 @@
 				<button
 					on:click={() => {
 						const chatMessage = formChatObject(lobbyId, currentUser, sendToUsername, newMessage);
-						console.log('chatMessage:', chatMessage);
+						// console.log('chatMessage:', chatMessage);
 						sendMessageToBackendAndSocket(chatMessage, token, socket);
 						newMessage = '';
 					}}>Send</button
@@ -234,7 +236,7 @@
 			<button
 				on:click={() => {
 					const chatMessage = formChatObject(lobbyId, currentUser, sendToUsername, newMessage);
-					console.log('chatMessage:', chatMessage);
+					// console.log('chatMessage:', chatMessage);
 					sendMessageToBackendAndSocket(chatMessage, token, socket);
 					newMessage = '';
 				}}>Send</button

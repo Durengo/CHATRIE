@@ -30,6 +30,44 @@
 
 	let sockets = [];
 
+	const spawnSockets = async () => {
+		disconnectFromSockets();
+
+		if (username && chatRooms.length > 0) {
+			// Create a socket for each chatroom that is open
+			chatRooms.forEach((room) => {
+				// console.log('room:', room);
+				const { lobbyId, withUser } = room;
+
+				// Create a socket for each chatroom
+				const socket = io('http://localhost:8089', {
+					query: { room: lobbyId, from: username, to: withUser }
+				});
+				const this_queue = `chat-message-${lobbyId}-${username}`;
+
+				socket.on(`${this_queue}`, async (data) => {
+					try {
+						// receivedMessage = data;
+						// console.log('Received chat message:', data);
+						// fetchChatHistory(lobbyId, authToken);
+						const fetchedLobbies = await fetchLobbies(username, token);
+						chatRooms = await sortLobbiesByLatestMessage(username, fetchedLobbies, token);
+						users = await fetchUsers(token);
+					} catch (error) {
+						console.error('Error fetching lobby history:', error);
+					}
+				});
+
+				socket.on('connect', () => {
+					console.log('Connected to WebSocket server');
+				});
+
+				// Add the socket to the list of sockets
+				sockets.push(socket);
+			});
+		}
+	};
+
 	onMount(async () => {
 		// Subscribe to the stores on mount
 		const unsubscribeUsername = loginUsername.subscribe((value) => {
@@ -48,12 +86,12 @@
 			sendToUsername = value;
 		});
 		try {
-			console.log('username:', username);
+			// console.log('username:', username);
 			console.log('token:', token);
 
 			isValid = await verifyJWT(username, token);
 
-			console.log('valid: ', isValid);
+			// console.log('valid: ', isValid);
 
 			if (isValid) {
 				try {
@@ -63,40 +101,9 @@
 					chatRooms = await sortLobbiesByLatestMessage(username, fetchedLobbies, token);
 					users = await fetchUsers(token);
 
+					await spawnSockets();
+
 					// if (lobbyId && username && chatRooms.length > 0) {
-					if (username && chatRooms.length > 0) {
-						// Create a socket for each chatroom that is open
-						chatRooms.forEach((room) => {
-							// console.log('room:', room);
-							const { lobbyId, withUser } = room;
-
-							// Create a socket for each chatroom
-							const socket = io('http://localhost:8089', {
-								query: { room: lobbyId, from: username, to: withUser }
-							});
-							const this_queue = `chat-message-${lobbyId}-${username}`;
-
-							socket.on(`${this_queue}`, async (data) => {
-								try {
-									// receivedMessage = data;
-									console.log('Received chat message:', data);
-									// fetchChatHistory(lobbyId, authToken);
-									const fetchedLobbies = await fetchLobbies(username, token);
-									chatRooms = await sortLobbiesByLatestMessage(username, fetchedLobbies, token);
-									users = await fetchUsers(token);
-								} catch (error) {
-									console.error('Error fetching lobby history:', error);
-								}
-							});
-
-							socket.on('connect', () => {
-								console.log('Connected to WebSocket server');
-							});
-
-							// Add the socket to the list of sockets
-							sockets.push(socket);
-						});
-					}
 				} catch (error) {
 					console.error('Error fetching chat history:', error);
 				}
@@ -123,8 +130,8 @@
 		sessionStorage.setItem('currentLobbyId', lobbyId);
 		sessionStorage.setItem('currentSendToUsername', sendToUser);
 
-		console.log('Navigating to chat:', lobbyId);
-		console.log('Chat between:', username, 'and', sendToUser);
+		// console.log('Navigating to chat:', lobbyId);
+		// console.log('Chat between:', username, 'and', sendToUser);
 
 		goto(`/chat/${lobbyId}`);
 	};
@@ -144,7 +151,11 @@
 		}
 	};
 
+	// Respawn sockets every set amount of time.
+	// const intervalId = setInterval(spawnSockets, 5000);
+
 	onDestroy(() => {
+		// clearInterval(intervalId);
 		disconnectFromSockets();
 	});
 </script>
@@ -160,7 +171,7 @@
 					<ul>
 						<button
 							on:click={() => {
-								console.log('room:', room);
+								// console.log('room:', room);
 								disconnectFromSockets();
 								navigateToChat(room.lobbyId, username, room.withUser);
 							}}

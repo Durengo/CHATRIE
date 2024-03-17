@@ -121,7 +121,7 @@ export async function sortLobbiesByLatestMessage(currentUser, lobbies, authToken
 			}
 
 			if (chatHistory === true) {
-				console.log('No chat history');
+				// console.log('No chat history');
 				lobbiesWithLatestMessage.push({
 					lobbyId: lobby.lobbyId,
 					// withUser: lobby.user1Nickname === currentUser ? lobby.user2Nickname : lobby.user1Nickname,
@@ -177,7 +177,7 @@ export async function sortLobbiesByLatestMessage(currentUser, lobbies, authToken
 	}
 
 	// Before sort
-	console.log('Before sort:', lobbiesWithLatestMessage);
+	// console.log('Before sort:', lobbiesWithLatestMessage);
 
 	// Sort the lobbies by latest message and put lobbies without messages at the bottom
 	const sortedLobbies = lobbiesWithLatestMessage.sort((a, b) => {
@@ -194,7 +194,7 @@ export async function sortLobbiesByLatestMessage(currentUser, lobbies, authToken
 	});
 
 	// After sort
-	console.log('After sort:', sortedLobbies);
+	// console.log('After sort:', sortedLobbies);
 
 	return sortedLobbies;
 }
@@ -206,7 +206,7 @@ export async function createLobby(user1, user2, authToken) {
 
 		for (let i = 0; i < lobbies.length; i++) {
 			if (lobbies[i].user1 === user2 || lobbies[i].user2 === user2) {
-				console.log('Lobby already exists');
+				// console.log('Lobby already exists');
 				return lobbies[i];
 			}
 		}
@@ -221,7 +221,7 @@ export async function createLobby(user1, user2, authToken) {
 
 		if (lobbyId.ok) {
 			const uuid = await lobbyId.json();
-			console.log('Lobby ID:', uuid);
+			// console.log('Lobby ID:', uuid);
 
 			const response = await fetch('http://localhost:8090/lobbies', {
 				method: 'POST',
@@ -238,7 +238,7 @@ export async function createLobby(user1, user2, authToken) {
 
 			if (response.ok) {
 				const data = await response.json();
-				console.log('Lobby created:', data);
+				// console.log('Lobby created:', data);
 				return data;
 			} else {
 				throw new Error(`Error creating lobby: ${response.statusText}`);
@@ -258,9 +258,9 @@ export async function sendMessageToBackendAndSocket(chatObject, authToken, socke
 		return;
 	}
 
-	console.log('Sending message to backend:', chatObject);
-	console.log('authToken:', authToken);
-	console.log('socket:', socket);
+	// console.log('Sending message to backend:', chatObject);
+	// console.log('authToken:', authToken);
+	// console.log('socket:', socket);
 
 	// Sending message to backend
 	try {
@@ -272,20 +272,19 @@ export async function sendMessageToBackendAndSocket(chatObject, authToken, socke
 		});
 
 		if (response.ok) {
-			console.log('Message sent!');
+			// console.log('Message sent!');
 			fetchChatHistory(chatObject.lobbyChatKey.lobbyId, authToken);
+			try {
+				socket.emit('send_chat', chatObject);
+			} catch (error) {
+				console.error('Error sending message to socket:', error);
+			}
 			// Update chat history
 		} else {
 			console.error('Error sending message:', response.statusText);
 		}
 	} catch (error) {
 		console.error('Error sending message to backend:', error);
-	}
-
-	try {
-		socket.emit('send_chat', chatObject);
-	} catch (error) {
-		console.error('Error sending message to socket:', error);
 	}
 }
 
@@ -328,7 +327,7 @@ export async function sendMessage(lobbyId, messageFrom, messageTo, message, auth
 		});
 
 		if (response.ok) {
-			console.log('Message sent!');
+			// console.log('Message sent!');
 			fetchChatHistory(lobbyId, authToken);
 			// Update chat history
 		} else {
@@ -348,7 +347,7 @@ export async function fetchUsers(authToken) {
 
 	if (response.ok) {
 		const data = await response.json();
-		console.log('Users:', data);
+		// console.log('Users:', data);
 		return data;
 	} else {
 		throw new Error('Failed to fetch users');
