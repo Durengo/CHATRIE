@@ -114,7 +114,7 @@ public class RabbitMQConfig {
                 logger.warn("no queues identified.");
 
             for (var queue : queues) {
-                if (!queue.equals(QUEUE_NAME))
+//                if (!queue.equals(QUEUE_NAME))
                     purgeQueueDirect(queue);
             }
         } catch (Exception e) {
